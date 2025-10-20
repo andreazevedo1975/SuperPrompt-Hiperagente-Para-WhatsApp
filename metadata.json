@@ -1,0 +1,5 @@
+{
+  "name": "WhatsApp Hyperagent Configurator",
+  "description": "A web application to visualize and configure the operational prompt for an advanced conversational assistant designed for the WhatsApp Business Platform.",
+  "requestFramePermissions": []
+}
