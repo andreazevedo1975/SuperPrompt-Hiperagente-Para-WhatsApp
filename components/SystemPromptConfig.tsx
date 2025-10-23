@@ -1,8 +1,9 @@
 import React from 'react';
 
 interface SystemPromptConfigProps {
-    systemPrompt: string;
-    setSystemPrompt: (prompt: string) => void;
+    basePromptTemplate: string;
+    setBasePromptTemplate: (prompt: string) => void;
+    finalSystemPrompt: string;
     exampleUserInput1: string;
     setExampleUserInput1: (input: string) => void;
     exampleAgentOutput1: string;
@@ -37,8 +38,9 @@ const TextAreaInput: React.FC<{
 );
 
 export const SystemPromptConfig: React.FC<SystemPromptConfigProps> = ({
-    systemPrompt,
-    setSystemPrompt,
+    basePromptTemplate,
+    setBasePromptTemplate,
+    finalSystemPrompt,
     exampleUserInput1,
     setExampleUserInput1,
     exampleAgentOutput1,
@@ -50,18 +52,29 @@ export const SystemPromptConfig: React.FC<SystemPromptConfigProps> = ({
 }) => {
     return (
         <div className="space-y-6">
-            <div>
-                <p className="text-slate-400 mb-4">
-                    O "System Prompt" é a instrução principal que define a identidade, o comportamento e os objetivos do seu Hiperagente. Ele serve como a "constituição" do assistente, guiando todas as suas interações.
-                </p>
-                <TextAreaInput
-                    id="systemPrompt"
-                    label="Template do System Prompt"
-                    value={systemPrompt}
-                    onChange={(e) => setSystemPrompt(e.target.value)}
-                    placeholder="Defina a personalidade e as diretrizes principais do agente..."
-                    rows={6}
-                />
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 items-start">
+                <div>
+                    <p className="text-slate-400 mb-4">
+                        O "System Prompt" é a instrução principal que define a identidade, o comportamento e os objetivos do seu Hiperagente. Ele serve como a "constituição" do assistente, guiando todas as suas interações.
+                    </p>
+                    <TextAreaInput
+                        id="basePromptTemplate"
+                        label="Template do Prompt Principal"
+                        value={basePromptTemplate}
+                        onChange={(e) => setBasePromptTemplate(e.target.value)}
+                        placeholder="Defina a personalidade e as diretrizes principais do agente..."
+                        rows={10}
+                    />
+                    <p className="text-xs text-slate-500 mt-2">Use <code className="bg-slate-700 px-1 rounded">{'{agentName}'}</code> e <code className="bg-slate-700 px-1 rounded">{'{companyName}'}</code> para inserir os nomes dinamicamente.</p>
+                </div>
+                <div className="mt-4 lg:mt-0">
+                     <label htmlFor="prompt-preview" className="block text-sm font-medium text-slate-400 mb-2">
+                        Pré-visualização em Tempo Real
+                    </label>
+                    <pre id="prompt-preview" className="w-full bg-slate-900/50 border border-slate-700 rounded-md p-3 text-sm text-slate-300 whitespace-pre-wrap h-full min-h-[268px] overflow-y-auto font-sans">
+                        {finalSystemPrompt}
+                    </pre>
+                </div>
             </div>
 
             <div className="border-t border-slate-700 pt-6">

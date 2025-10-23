@@ -1,6 +1,7 @@
 import React from 'react';
 import type { Guideline, Persona, NicheModule, HandoffTrigger, HandoffStep } from './types';
 import { ShieldCheckIcon, ClockIcon, HandRaisedIcon, UserCircleIcon, LockClosedIcon, ChatBubbleLeftRightIcon } from './components/Icons';
+import { FunctionDeclaration, Type } from '@google/genai';
 
 export const GUIDELINES: Guideline[] = [
   {
@@ -129,3 +130,30 @@ export const HANDOFF_STEPS: HandoffStep[] = [
     { step: 3, action: "Informar espera: \"Estamos te transferindo agora. Nosso tempo médio de espera é de [Tempo Estimado].\"" },
     { step: 4, action: "Transferir histórico completo da conversa e o resumo para o atendente." }
 ];
+
+export const AGENDAR_VISITA_TOOL: FunctionDeclaration = {
+  name: 'agendar_visita',
+  parameters: {
+    type: Type.OBJECT,
+    description: 'Agenda uma visita técnica ou de vendas para um cliente.',
+    properties: {
+      nome_cliente: {
+        type: Type.STRING,
+        description: 'O nome completo do cliente que está solicitando a visita.',
+      },
+      data: {
+        type: Type.STRING,
+        description: 'A data desejada para a visita, no formato AAAA-MM-DD.',
+      },
+      hora: {
+        type: Type.STRING,
+        description: 'A hora desejada para a visita, no formato HH:MM.',
+      },
+      motivo: {
+        type: Type.STRING,
+        description: 'Uma breve descrição do motivo da visita (ex: "Orçamento", "Manutenção", "Demonstração").',
+      },
+    },
+    required: ['nome_cliente', 'data', 'hora', 'motivo'],
+  },
+};

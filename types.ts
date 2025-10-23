@@ -26,3 +26,21 @@ export interface HandoffStep {
   step: number;
   action: string;
 }
+
+export interface TranscriptionEntry {
+  speaker: 'user' | 'model';
+  text: string;
+  isFinal: boolean;
+}
+
+export interface ChatMessageSource {
+  type: 'web' | 'maps';
+  uri: string;
+  title: string;
+}
+
+export interface ChatMessage {
+  role: 'user' | 'model' | 'system';
+  text: string;
+  sources?: ChatMessageSource[];
+}
