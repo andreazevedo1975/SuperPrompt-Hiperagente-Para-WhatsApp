@@ -1,5 +1,8 @@
+import type { ReactNode } from 'react';
+
+// FIX: Import `ReactNode` and use it directly to resolve 'Cannot find namespace React' error.
 export interface Guideline {
-  icon: React.ReactNode;
+  icon: ReactNode;
   title: string;
   description: string;
 }
@@ -43,4 +46,18 @@ export interface ChatMessage {
   role: 'user' | 'model' | 'system';
   text: string;
   sources?: ChatMessageSource[];
+}
+
+export interface AppConfig {
+  agentName: string;
+  companyName: string;
+  selectedPersonaProfile: string;
+  basePromptTemplate: string;
+  exampleUserInput1: string;
+  exampleAgentOutput1: string;
+  exampleUserInput2: string;
+  exampleAgentOutput2: string;
+  useGoogleSearch: boolean;
+  useGoogleMaps: boolean;
+  useFunctionCalling: boolean;
 }

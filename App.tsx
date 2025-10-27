@@ -14,7 +14,7 @@ import { LiveConversation } from './components/LiveConversation';
 import { SystemPromptConfig } from './components/SystemPromptConfig';
 import { ChatSimulator } from './components/ChatSimulator';
 import { AdvancedTools } from './components/AdvancedTools';
-import type { Persona, ChatMessage, ChatMessageSource } from './types';
+import type { Persona, ChatMessage, ChatMessageSource, AppConfig } from './types';
 
 const App: React.FC = () => {
   const [agentName, setAgentName] = useState<string>('Nome do Hiperagente');
@@ -220,6 +220,81 @@ const App: React.FC = () => {
     }
   };
 
+  const handleExportConfig = () => {
+    const config: AppConfig = {
+      agentName,
+      companyName,
+      selectedPersonaProfile: selectedPersona.profile,
+      basePromptTemplate,
+      exampleUserInput1,
+      exampleAgentOutput1,
+      exampleUserInput2,
+      exampleAgentOutput2,
+      useGoogleSearch,
+      useGoogleMaps,
+      useFunctionCalling,
+    };
+    
+    const blob = new Blob([JSON.stringify(config, null, 2)], {type : 'application/json'});
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = `hyperagent-config-${new Date().toISOString().split('T')[0]}.json`;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
+  };
+
+  const handleImportConfig = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = (e) => {
+        try {
+            const text = e.target?.result;
+            if (typeof text !== 'string') throw new Error("File content is not readable.");
+            
+            const config = JSON.parse(text) as Partial<AppConfig>;
+
+            if (!config.agentName || !config.companyName || !config.selectedPersonaProfile || !config.basePromptTemplate) {
+                 throw new Error("Invalid or incomplete configuration file.");
+            }
+
+            setAgentName(config.agentName);
+            setCompanyName(config.companyName);
+
+            const newPersona = PERSONAS.find(p => p.profile === config.selectedPersonaProfile);
+            if (newPersona) {
+                setSelectedPersona(newPersona);
+            } else {
+                console.warn(`Persona profile "${config.selectedPersonaProfile}" not found. Defaulting to first available.`);
+                setSelectedPersona(PERSONAS[0]);
+            }
+
+            setBasePromptTemplate(config.basePromptTemplate);
+            setExampleUserInput1(config.exampleUserInput1 ?? '');
+            setExampleAgentOutput1(config.exampleAgentOutput1 ?? '');
+            setExampleUserInput2(config.exampleUserInput2 ?? '');
+            setExampleAgentOutput2(config.exampleAgentOutput2 ?? '');
+            
+            setUseGoogleSearch(config.useGoogleSearch ?? false);
+            setUseGoogleMaps(config.useGoogleMaps ?? false);
+            setUseFunctionCalling(config.useFunctionCalling ?? false);
+            
+            alert('Configuration imported successfully!');
+
+        } catch (error) {
+            console.error("Failed to import configuration:", error);
+            alert(`Failed to import configuration: ${error instanceof Error ? error.message : 'Unknown error'}`);
+        } finally {
+            if (event.target) {
+                event.target.value = '';
+            }
+        }
+    };
+  };
 
   const welcomeMessage = `Olá! Eu sou o ${agentName || '[Nome]'}, o Hiperagente da ${companyName || '[Empresa]'}. 😉 Fico feliz em te atender! Antes de começarmos, preciso entender com quem estou falando para personalizar nosso bate-papo.
 
@@ -238,7 +313,9 @@ Por favor, digite seu CPF/CNPJ ou escolha uma opção no Menu Principal:`;
           agentName={agentName} 
           setAgentName={setAgentName} 
           companyName={companyName} 
-          setCompanyName={setCompanyName} 
+          setCompanyName={setCompanyName}
+          onExport={handleExportConfig}
+          onImport={handleImportConfig}
         />
 
         <main className="mt-8 space-y-12">
